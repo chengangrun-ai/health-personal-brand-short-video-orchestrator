@@ -1,10 +1,12 @@
-# Health Personal-Brand Short-Video Orchestrator
+# Health Personal-Brand Short-Video Content System
 
-> 别名：**健康个人IP短视频文案生成总控台**
+> 别名：**健康个人IP短视频文案生成总控台（完整系统版）**
 
-**An opinionated WorkBuddy skill that turns one line of natural language into a finished short-video script — by routing your request to the right downstream skill and chaining them in the right order.**
+**A complete, opinionated short-video content system for WorkBuddy — one natural-language request in, a finished short-video script out. It routes your intent to the right downstream skill and chains them in the right order.**
 
 把一句话需求，自动路由到正确的下游 Skill，按顺序串成流水线，最后只给你「拿起来就能拍」的短视频文案。
+
+本仓库 = **1 个总控 + 6 个基础 Skill** 的完整系统，朋友克隆一次即可全部安装。
 
 ---
 
@@ -18,17 +20,19 @@
 
 ---
 
-## Who is this for / 给谁用
+## What's inside / 包含什么
 
-- 想做**健康个人 IP** 短视频，但不想每次都从零想结构的人
-- 已经有一堆基础 Skill，但懒得记名字、懒得手动拼调用链的人
-- 非技术背景、用自然语言指挥 AI 的人
+| Skill | 层 | 功能 |
+|---|---|---|
+| `short-video-content-orchestrator` | 总控 | 听懂自然语言、判断意图、调度下面所有 Skill |
+| `brand-voice` | 人格层 | 像不像我、AI 味检测、禁用表达 |
+| `content-and-copy` | 内容层 | 写/改文字、结构、标题、金句、仿写分析 |
+| `short-form-video-script` | 写法层 | Hook、视频结构、留存、口播、拍摄提示 |
+| `content-repurposing` | 裂变层 | 母体裂变、多平台改编、内容矩阵 |
+| `content-research` | 研究层 | 实时选题研究（热点/评分/机会矩阵） |
+| `viral-video-analyzer` | 拆解层 | 爆款视频逐帧+字幕拆解、可迁移结构 |
 
-你只说人话，剩下的调度交给这个 Skill。
-
----
-
-## What it does / 核心功能
+### 任务路由 / Task routing
 
 | 类型 | 触发示例 | 调用链 |
 |---|---|---|
@@ -42,8 +46,6 @@
 
 ### 上下文传递机制 / Context handoff
 
-不同 Skill 之间用两个结构化包传递上下文，下游不用重新理解：
-
 ```markdown
 ## 内容包 (Content Package)
 主题:  目标人群:  视频目的:  核心观点:  内容角度:  冲突:  故事:  案例:
@@ -56,34 +58,44 @@
 
 ---
 
-## Install / 安装
+## Install / 安装（朋友只需这一步）
 
 1. 安装 [WorkBuddy](https://www.workbuddy.cn)。
-2. 把本仓库放进 Skill 扫描目录：
+2. 把本仓库下载/克隆下来，把 **4 个目录** 分别复制到 WorkBuddy 对应位置：
 
 ```bash
-mkdir -p ~/.workbuddy/skills
-cp -r health-personal-ip-short-video-copy-orchestrator ~/.workbuddy/skills/
+# 总控 Skill
+cp -r skills/short-video-content-orchestrator ~/.workbuddy/skills/
+
+# 6 个基础 Skill（隐藏目录，总控用绝对路径读取）
+cp -r content-system-foundation ~/.workbuddy/
+
+# 内容资产库（⚠️ 当前是示例，请替换成你自己的）
+cp -r content-assets ~/.workbuddy/
+
+# 个人表达风格（⚠️ 当前是示例，请替换成你自己的）
+cp -r voice-profile ~/.workbuddy/
 ```
 
 3. 完全退出并重开 WorkBuddy，让 Skill 列表刷新。
 
 ---
 
+## ⚠️ 替换你的数据 / Replace the example data
+
+仓库里的 `content-assets/` 和 `voice-profile/` 是**示例占位**（已标注 `[示例]`），不含任何真实业务或个人信息。要让系统真正像**你**，请替换成你自己的：
+
+- `content-assets/content-assets.md` → 你的观点库/故事库/案例库/金句库/选题库
+- `content-assets/content-map.md`、`hook-library.md`、`breakdown-library.md`、`topic-db.md` → 你的多平台映射、Hook、拆解结构、选题
+- `voice-profile/voice-profile.md` → 你的真实表达习惯、禁用词、AI 味高危词
+- `voice-profile/corpus/我的说话方式和内容.md` → 你的真实语料
+- `voice-profile/feedback-log.md` → 留空，运行后自动积累
+
+> 不替换也能跑（系统不会因缺文件报错），但产出的文案会是通用示例风格，不像你。
+
+---
+
 ## Configure / 配置
-
-本 Skill 依赖 4 个基础 Skill 作为执行层：
-
-| Skill | 功能 | 默认路径 |
-|---|---|---|
-| `brand-voice` | 人格化 / AI 味检测 | `~/.workbuddy/content-system-foundation/brand-voice/SKILL.md` |
-| `content-and-copy` | 文案生成与改写 | `~/.workbuddy/content-system-foundation/content-and-copy/SKILL.md` |
-| `short-form-video-script` | 短视频脚本结构 | `~/.workbuddy/content-system-foundation/short-form-video-script/SKILL.md` |
-| `content-repurposing` | 多平台裂变 | `~/.workbuddy/content-system-foundation/content-repurposing/SKILL.md` |
-
-可选增强：`content-research`（实时选题研究）、`viral-video-analyzer`（爆款拆解）。
-
-> 基础 Skill 默认放在隐藏目录 `content-system-foundation/` 下，不出现在用户 Skill 列表。想让它们显示，移到 `~/.workbuddy/skills/` 即可。
 
 如果你的路径不同，复制 `.env.example` 为 `.env` 自定义：
 
@@ -113,21 +125,11 @@ VOICE_PROFILE_DIR="~/.workbuddy/voice-profile"
 - 「把这条裂变到抖音小红书朋友圈」
 - 「完整做一条短视频」
 
-**Example / 示例**
-
-> 用户：「完整做一条关于熬夜和代谢的 1 分钟短视频」
-
-Skill 流水线：
-1. `content-and-copy` 产出【内容包】
-2. `short-form-video-script` 产出【脚本包】
-3. `brand-voice` 做人格化检查并修正
-4. 最终输出：选题、标题、Hook、完整口播、拍摄方式、CTA、设计说明
-
 ---
 
 ## Design philosophy / 设计哲学
 
-- **只调度，不替代**：本 Skill 不做选题、不写文案、不改稿，只判断意图、串联调用链。
+- **只调度，不替代**：总控不做选题、不写文案、不改稿，只判断意图、串联调用链。
 - **最小调用链**：按意图走最短路径，不每次调全部 Skill，省 token。
 - **不暴露内部流程**：对用户只给结果和必要的设计说明。
 - **不虚构事实**：研究类任务必须真搜；没信号就明说。
@@ -139,12 +141,23 @@ Skill 流水线：
 
 ```text
 health-personal-brand-short-video-orchestrator/
-├── SKILL.md                    # 主文件：路由与调度逻辑
-├── references/
-│   └── skill-registry.md       # 可扩展架构注册表
-├── .env.example                # 环境变量模板
-├── README.md                   # 本文件
-└── LICENSE                     # MIT License
+├── skills/
+│   └── short-video-content-orchestrator/   # 总控
+│       ├── SKILL.md
+│       └── references/skill-registry.md
+├── content-system-foundation/              # 6 个基础 Skill
+│   ├── brand-voice/
+│   ├── content-and-copy/
+│   ├── short-form-video-script/
+│   ├── content-repurposing/
+│   ├── content-research/
+│   └── viral-video-analyzer/
+├── content-assets/                         # 示例数据（请替换）
+├── voice-profile/                          # 示例人设（请替换）
+├── .env.example
+├── .gitignore
+├── README.md
+└── LICENSE
 ```
 
 ---
@@ -153,7 +166,7 @@ health-personal-brand-short-video-orchestrator/
 
 欢迎 Fork、提 Issue、二次改造。
 
-有优化想法直接来——这个 Skill 的核心逻辑不藏私。新增下游 Skill 只需在 `references/skill-registry.md` 注册，总控即可自动路由，无需重写 `SKILL.md`。
+有优化想法直接来——核心逻辑不藏私。新增下游 Skill 只需在 `references/skill-registry.md` 注册，总控即可自动路由，无需重写 `SKILL.md`。
 
 ---
 
