@@ -1,6 +1,6 @@
-# Health Personal-Brand Short-Video Content System
+# Short-Video Voiceover Orchestrator
 
-> 别名：**健康个人IP短视频文案生成总控台（完整系统版）**
+> 中文名：**短视频口播总控台**（完整系统版）
 
 **A complete, opinionated short-video content system for WorkBuddy — one natural-language request in, a finished short-video script out. It routes your intent to the right downstream skill and chains them in the right order.**
 
@@ -140,7 +140,7 @@ VOICE_PROFILE_DIR="~/.workbuddy/voice-profile"
 ## Skill structure / 目录结构
 
 ```text
-health-personal-brand-short-video-orchestrator/
+short-video-voiceover-orchestrator/
 ├── skills/
 │   └── short-video-content-orchestrator/   # 总控
 │       ├── SKILL.md
